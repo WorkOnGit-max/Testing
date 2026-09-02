@@ -12,17 +12,9 @@ from fastapi.templating import Jinja2Templates
 from BackEnd.TSA_image import extract
 import psutil
 
-try:
-    from nltk.corpus import stopwords
-    from nltk.stem import WordNetLemmatizer
-
-    lemmatizer = WordNetLemmatizer()
-    stop_words = set(stopwords.words("english"))
-    for word in ["not", "no", "nor", "never", "very", "too"]:
-        stop_words.discard(word)
-except LookupError:
-    lemmatizer = None
-    stop_words = set()
+# Minimal preprocessing: no lemmatization or stopwords to save memory
+lemmatizer = None
+stop_words = set()
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -67,6 +59,9 @@ class SentimentPredictor:
                 providers=["CPUExecutionProvider"],
             )
         if self._tokenizer is None:
+            import tensorflow as tf
+            import sys, tensorflow as tf
+            sys.modules['keras'] = tf.keras
             with open(self.model_dir / "tokenizer.pkl", "rb") as file:
                 self._tokenizer = pickle.load(file)
 
@@ -121,8 +116,8 @@ def clean_text(text: str) -> str:
 
     return " ".join(tokens)
 
-# Configuration: set to True to load model per request (lower peak RAM, higher latency)
-LOAD_PER_REQUEST = True
+if not LOAD_PER_REQUEST:
+    predictor = SentimentPredictor(MODEL_DIR)
 
 def prediction_result(user_input: str) -> tuple[str, float, str]:
     cleaned = clean_text(user_input)
