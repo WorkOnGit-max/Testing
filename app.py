@@ -116,7 +116,9 @@ def clean_text(text: str) -> str:
 
     return " ".join(tokens)
 
-if not LOAD_PER_REQUEST:
+# Configuration: set to True to load model per request (lower peak RAM, higher latency)
+LOAD_PER_REQUEST = True
+
     predictor = SentimentPredictor(MODEL_DIR)
 
 def prediction_result(user_input: str) -> tuple[str, float, str]:
