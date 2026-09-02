@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#050508"><title>TSA</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='/TSA.css') }}?v=5">
+</head>
+<body>
+  <main>
+    <header><a href="/"><i></i>TSA</a><span>System online</span></header>
+    <section class="panel">
+      <div class="orb"></div>
+      <p class="tag">Neural Language Intelligence</p>
+      <h1>AI Text Sentiment<br><em>Analysis.</em></h1>
+      <p class="intro">Scan a sequence or image for neural emotional tone.</p>
+      <nav aria-label="Input type"><button class="active" data-show="text">Text signal</button><button data-show="image">Image scan</button></nav>
+
+      <form id="text" action="/predict" method="post">
+        <textarea name="text" aria-label="Text to analyze" placeholder="Enter a message to scan..." maxlength="1200" required></textarea>
+        <button class="submit">Run analysis <b>&rarr;</b></button>
+      </form>
+
+      <form id="image" action="/upload_image" method="post" enctype="multipart/form-data" hidden>
+        <label class="upload"><strong>Upload image</strong><small>PNG, JPG or WEBP with readable text</small><input type="file" name="image" accept="image/*" required></label>
+        <button class="submit">Run image scan <b>&rarr;</b></button>
+      </form>
+    </section>
+    <footer>Neural language telemetry &middot; OCR enabled</footer>
+  </main>
+  <script>
+    const tabs=document.querySelectorAll("nav button"),forms=document.querySelectorAll("form");
+    tabs.forEach(t=>t.onclick=()=>{tabs.forEach(x=>x.classList.toggle("active",x===t));forms.forEach(f=>f.hidden=f.id!==t.dataset.show)});
+  </script>
+</body>
+</html>

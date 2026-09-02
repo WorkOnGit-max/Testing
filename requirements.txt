@@ -1,0 +1,16 @@
+fastapi[standard]
+uvicorn[standard]
+gunicorn
+jinja2
+
+numpy
+python-multipart
+
+nltk
+
+opencv-python-headless
+pillow
+pytesseract
+
+onnxruntime
+psutil

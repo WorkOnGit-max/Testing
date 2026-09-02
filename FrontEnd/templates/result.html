@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#050508"><title>Analysis Result</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='/TSA.css') }}?v=5">
+</head>
+<body>
+  <main>
+    <header><a href="/"><i></i>NeuroSentiment</a><span>Analysis complete</span></header>
+    <section class="panel result {{ result.split(' ')[0]|lower }}">
+      <div class="pulse"></div>
+      <p class="tag">Signal decoded</p>
+      <h1>{{ result }}</h1>
+      {% if input_text %}<blockquote><small>Original transmission</small>{{ input_text }}</blockquote>{% endif %}
+      <a class="submit" href="/">Analyze another <b>&rarr;</b></a>
+    </section>
+    <footer>Neural Processing Complete &middot; Data archived locally</footer>
+  </main>
+</body>
+</html>
