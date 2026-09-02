@@ -58,8 +58,11 @@ class SentimentPredictor:
             sess_options.enable_mem_pattern = False
             sess_options.enable_cpu_mem_arena = False
             sess_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_BASIC
+            model_path = self.model_dir / "sentiment_model_quant.onnx"
+            if not model_path.exists():
+                model_path = self.model_dir / "sentiment_model.onnx"
             self._session = ort.InferenceSession(
-                str(self.model_dir / "sentiment_model.onnx"),
+                str(model_path),
                 sess_options=sess_options,
                 providers=["CPUExecutionProvider"],
             )
@@ -76,6 +79,8 @@ class SentimentPredictor:
 
     def predict(self, text: str) -> tuple[str, float]:
         self._load()
+        # Verify memory usage before inference
+        self._check_memory()
         sequence = self._tokenizer.texts_to_sequences([text])
         # Pure-numpy pad_sequences (no keras/TF needed)
         seq = sequence[0][:MAX_LEN]
@@ -84,9 +89,16 @@ class SentimentPredictor:
         input_name = self._session.get_inputs()[0].name
         probs = self._session.run(None, {input_name: padded})[0][0]
         label_idx = int(np.argmax(probs))
-        return LABEL_NAMES[label_idx], float(probs[label_idx])
+        result = (LABEL_NAMES[label_idx], float(probs[label_idx]))
+        # If loading per request, free resources immediately
+        if self.load_per_request:
+            self._session = None
+            self._tokenizer = None
+            import gc
+            gc.collect()
+        return result
 
-predictor = SentimentPredictor(MODEL_DIR)
+# Global predictor removed; per-request predictor used
 
 def clean_text(text: str) -> str:
     if not isinstance(text, str):
