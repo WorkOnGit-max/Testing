@@ -119,6 +119,8 @@ def clean_text(text: str) -> str:
 # Configuration: set to True to load model per request (lower peak RAM, higher latency)
 LOAD_PER_REQUEST = True
 
+# Initialize shared predictor only when per-request loading is disabled
+if not LOAD_PER_REQUEST:
     predictor = SentimentPredictor(MODEL_DIR)
 
 def prediction_result(user_input: str) -> tuple[str, float, str]:
